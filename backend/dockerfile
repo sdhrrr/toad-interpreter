@@ -1,0 +1,17 @@
+FROM node:alpine
+
+RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache openjdk17-jdk
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+
+COPY . .
+
+EXPOSE 7000
+
+CMD ["node", "server.js"]

@@ -1,0 +1,9 @@
+pipelines {
+    agent any
+
+    environment {
+        DOCKER_IMAGE_BACKEND = 'toad-backend'
+        DOCKER_IMAGE_FRONTEND = 'toad-frontend'
+        DOCKER_REGISTERY = 'your'
+    }
+}
