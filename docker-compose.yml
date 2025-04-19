@@ -1,13 +1,13 @@
 services:
   frontend:
-    build: frontend/
+    image: ${REGISTRY}/${bNAME}
     ports:
       - "3000:80"
     networks:
       - my_network
 
   backend:
-    build: backend/
+    image: ${REGISTRY}/${FNAME}
     ports:
       - "7000:7000"
     networks:
