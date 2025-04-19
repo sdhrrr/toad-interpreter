@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+    
+    environment {
+        FIMAGE = "toad-frontend-image"
+        BIMAGE = "toad-backend-image"
+        DOCKERCRED = credentials("dockerhub")
+    }
+    
+    stages{
+        
+        stage("setup") {
+            steps {
+                script {
+                    env.REGISTRY = env.DOCKERCRED_USR
+                }
+            }
+        }
+        
+        stage("docker login"){
+            steps{
+
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PASS')]){
+                    script{
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USR} --password-stdin"
+                    }
+                }
+                
+                echo "logged in..."
+
+            }
+        }
+        
+        stage("clone repo") {
+            steps {
+                echo "cloning repo..."
+                git url:"https://github.com/sdhrrr/toad-interpreter.git", branch:"master"
+            }
+        }
+        stage("build") {
+            steps {
+                echo "building..."
+                sh """
+                    cd frontend
+                    docker build -t ${env.FIMAGE} .
+                    cd ..
+                    cd backend
+                    docker build -t ${env.BIMAGE} .
+                """
+            }
+        }
+        stage("push") {
+            steps {
+                echo "pushing to dockerhub..."
+                sh """
+                    docker tag ${env.FIMAGE} ${env.DOCKERCRED_USR}/${env.FIMAGE}:latest
+                    docker tag ${env.BIMAGE} ${env.DOCKERCRED_USR}/${env.BIMAGE}:latest
+                    docker push ${env.DOCKERCRED_USR}/${env.FIMAGE}:latest
+                    docker push ${env.DOCKERCRED_USR}/${env.BIMAGE}:latest
+                """
+            }
+        }
+        stage("run") {
+            steps {
+                echo "running containers..."
+                sh """
+                docker-compose up -d
+                """
+            }
+        }
+    }
+}
