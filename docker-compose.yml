@@ -1,13 +1,13 @@
 services:
   frontend:
-    image: ${REGISTRY}/${bNAME}
+    image: ${REGISTRY}/${FIMAGE}
     ports:
       - "3000:80"
     networks:
       - my_network
 
   backend:
-    image: ${REGISTRY}/${FNAME}
+    image: ${REGISTRY}/${BIMAGE}
     ports:
       - "7000:7000"
     networks:
