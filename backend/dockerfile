@@ -5,7 +5,7 @@ RUN apk add --no-cache openjdk17-jdk
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json /app/
 
 RUN npm install
 
